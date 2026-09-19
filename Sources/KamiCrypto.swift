@@ -5,6 +5,9 @@
 //   - 对称密钥：制卡端和 dylib 各内置一份，密钥泄露才可能导致他人制卡（对个人场景足够）
 import Foundation
 import CommonCrypto
+#if os(iOS)
+import UIKit
+#endif
 
 enum KamiCrypto {
 
