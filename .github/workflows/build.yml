@@ -1,0 +1,34 @@
+name: Build KamiVerify dylib
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build dylib
+        run: |
+          SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
+          xcrun --sdk iphoneos swiftc \
+            -target arm64-apple-ios14.0 \
+            -sdk "$SDK_PATH" \
+            -O -whole-module-optimization \
+            -emit-library -emit-module \
+            -module-name KamiVerify -parse-as-library \
+            Sources/*.swift Sources/kami_entry.c \
+            -o build/KamiVerify.dylib
+
+      - name: List artifact
+        run: ls -la build/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KamiVerify.dylib
+          path: build/KamiVerify.dylib
